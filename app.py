@@ -24,7 +24,7 @@ def create_table():
 
 create_table()
 
-# ---------- HOME (READ) ----------
+# ---------- HOME ----------
 @app.route('/')
 def index():
     conn = connect()
@@ -34,7 +34,7 @@ def index():
     conn.close()
     return render_template("index.html", students=students)
 
-# ---------- ADD (CREATE) ----------
+# ---------- ADD ----------
 @app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
@@ -60,10 +60,51 @@ def delete(id):
     cursor.execute("DELETE FROM students WHERE id=?", (id,))
     conn.commit()
     conn.close()
-
     return redirect('/')
 
-# ---------- RUN (IMPORTANT FOR RENDER) ----------
+# ---------- EDIT ----------
+@app.route('/edit/<int:id>')
+def edit(id):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM students WHERE id=?", (id,))
+    student = cursor.fetchone()
+    conn.close()
+    return render_template("edit.html", student=student)
+
+# ---------- UPDATE ----------
+@app.route('/update/<int:id>', methods=['POST'])
+def update(id):
+    name = request.form['name']
+    age = request.form['age']
+    dept = request.form['department']
+
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE students 
+        SET name=?, age=?, department=? 
+        WHERE id=?
+    """, (name, age, dept, id))
+
+    conn.commit()
+    conn.close()
+    return redirect('/')
+
+# ---------- SEARCH ----------
+@app.route('/search', methods=['POST'])
+def search():
+    keyword = request.form['keyword']
+
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM students WHERE name LIKE ?", ('%' + keyword + '%',))
+    students = cursor.fetchall()
+    conn.close()
+
+    return render_template("index.html", students=students)
+
+# ---------- RUN ----------
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',

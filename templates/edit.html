@@ -6,30 +6,16 @@
 </head>
 <body class="bg-light">
 
-<div class="container mt-5">
+<div class="container mt-4">
 
-    <div class="card p-4 shadow">
-        <h3 class="mb-3">✏️ Edit Student</h3>
+    <h2>Edit Student</h2>
 
-        <form action="/update/{{ student[0] }}" method="POST">
-
-            <div class="mb-3">
-                <input type="text" name="name" class="form-control" value="{{ student[1] }}" required>
-            </div>
-
-            <div class="mb-3">
-                <input type="number" name="age" class="form-control" value="{{ student[2] }}" required>
-            </div>
-
-            <div class="mb-3">
-                <input type="text" name="department" class="form-control" value="{{ student[3] }}" required>
-            </div>
-
-            <button class="btn btn-success">Update</button>
-            <a href="/" class="btn btn-secondary">Back</a>
-
-        </form>
-    </div>
+    <form action="/update/{{ student[0] }}" method="POST">
+        <input class="form-control mb-2" type="text" name="name" value="{{ student[1] }}" required>
+        <input class="form-control mb-2" type="number" name="age" value="{{ student[2] }}" required>
+        <input class="form-control mb-2" type="text" name="department" value="{{ student[3] }}" required>
+        <button class="btn btn-success">Update</button>
+    </form>
 
 </div>
 
