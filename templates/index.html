@@ -1,58 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Management</title>
+    <title>Student Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container mt-4">
 
-    <h2 class="text-center mb-4">🎓 Student Management System</h2>
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>🎓 Student Management System</h2>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
 
     <!-- SEARCH -->
     <form action="/search" method="POST" class="mb-3">
-        <input type="text" name="keyword" class="form-control" placeholder="Search by name">
+        <input type="text" name="keyword" class="form-control" placeholder="🔍 Search by name">
     </form>
 
-    <!-- ADD -->
-    <div class="card p-3 mb-4">
+    <!-- ADD STUDENT -->
+    <div class="card p-3 mb-4 shadow-sm">
         <h4>Add Student</h4>
         <form action="/add" method="POST">
             <input class="form-control mb-2" type="text" name="name" placeholder="Enter Name" required>
             <input class="form-control mb-2" type="number" name="age" placeholder="Enter Age" required>
             <input class="form-control mb-2" type="text" name="department" placeholder="Enter Department" required>
-            <button class="btn btn-primary">Add Student</button>
+            <button class="btn btn-primary w-100">Add Student</button>
         </form>
     </div>
 
-    <!-- TABLE -->
-    <div class="card p-3">
+    <!-- STUDENT TABLE -->
+    <div class="card p-3 shadow-sm">
         <h4>Students List</h4>
 
-        <table class="table table-bordered">
-            <tr class="table-dark">
-                <th>ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Department</th>
-                <th>Action</th>
-            </tr>
+        <table class="table table-bordered table-hover mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Department</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-            {% for student in students %}
-            <tr>
-                <td>{{ student[0] }}</td>
-                <td>{{ student[1] }}</td>
-                <td>{{ student[2] }}</td>
-                <td>{{ student[3] }}</td>
-                <td>
-                    <a class="btn btn-warning btn-sm" href="/edit/{{ student[0] }}">Edit</a>
-                    <a class="btn btn-danger btn-sm" href="/delete/{{ student[0] }}">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student[0] }}</td>
+                    <td>{{ student[1] }}</td>
+                    <td>{{ student[2] }}</td>
+                    <td>{{ student[3] }}</td>
+                    <td>
+                        <a href="/edit/{{ student[0] }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="/delete/{{ student[0] }}" class="btn btn-danger btn-sm"
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
         </table>
-
     </div>
 
 </div>

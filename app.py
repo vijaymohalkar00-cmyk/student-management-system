@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import sqlite3
 import os
 
 app = Flask(__name__)
+app.secret_key = "secret123"   # session key
 
 # ---------- DATABASE ----------
 def connect():
@@ -24,19 +25,47 @@ def create_table():
 
 create_table()
 
+# ---------- LOGIN ----------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username == "admin" and password == "1234":
+            session['user'] = username
+            return redirect('/')
+        else:
+            return "Invalid Credentials"
+
+    return render_template("login.html")
+
+# ---------- LOGOUT ----------
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect('/login')
+
 # ---------- HOME ----------
 @app.route('/')
 def index():
+    if 'user' not in session:
+        return redirect('/login')
+
     conn = connect()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM students")
     students = cursor.fetchall()
     conn.close()
+
     return render_template("index.html", students=students)
 
 # ---------- ADD ----------
 @app.route('/add', methods=['POST'])
 def add():
+    if 'user' not in session:
+        return redirect('/login')
+
     name = request.form['name']
     age = request.form['age']
     dept = request.form['department']
@@ -55,26 +84,37 @@ def add():
 # ---------- DELETE ----------
 @app.route('/delete/<int:id>')
 def delete(id):
+    if 'user' not in session:
+        return redirect('/login')
+
     conn = connect()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM students WHERE id=?", (id,))
     conn.commit()
     conn.close()
+
     return redirect('/')
 
 # ---------- EDIT ----------
 @app.route('/edit/<int:id>')
 def edit(id):
+    if 'user' not in session:
+        return redirect('/login')
+
     conn = connect()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM students WHERE id=?", (id,))
     student = cursor.fetchone()
     conn.close()
+
     return render_template("edit.html", student=student)
 
 # ---------- UPDATE ----------
 @app.route('/update/<int:id>', methods=['POST'])
 def update(id):
+    if 'user' not in session:
+        return redirect('/login')
+
     name = request.form['name']
     age = request.form['age']
     dept = request.form['department']
@@ -89,11 +129,15 @@ def update(id):
 
     conn.commit()
     conn.close()
+
     return redirect('/')
 
 # ---------- SEARCH ----------
 @app.route('/search', methods=['POST'])
 def search():
+    if 'user' not in session:
+        return redirect('/login')
+
     keyword = request.form['keyword']
 
     conn = connect()
