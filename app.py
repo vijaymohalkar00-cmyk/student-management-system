@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = "secret123"   # session key
+app.secret_key = "secret123"
 
 # ---------- DATABASE ----------
 def connect():
@@ -46,7 +46,7 @@ def logout():
     session.pop('user', None)
     return redirect('/login')
 
-# ---------- HOME ----------
+# ---------- HOME + DASHBOARD ----------
 @app.route('/')
 def index():
     if 'user' not in session:
@@ -54,11 +54,22 @@ def index():
 
     conn = connect()
     cursor = conn.cursor()
+
+    # all students
     cursor.execute("SELECT * FROM students")
     students = cursor.fetchall()
+
+    # total count
+    cursor.execute("SELECT COUNT(*) FROM students")
+    total = cursor.fetchone()[0]
+
+    # department wise count
+    cursor.execute("SELECT department, COUNT(*) FROM students GROUP BY department")
+    dept_data = cursor.fetchall()
+
     conn.close()
 
-    return render_template("index.html", students=students)
+    return render_template("index.html", students=students, total=total, dept_data=dept_data)
 
 # ---------- ADD ----------
 @app.route('/add', methods=['POST'])
@@ -146,11 +157,8 @@ def search():
     students = cursor.fetchall()
     conn.close()
 
-    return render_template("index.html", students=students)
+    return render_template("index.html", students=students, total=len(students), dept_data=[])
 
 # ---------- RUN ----------
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=int(os.environ.get('PORT', 5000))
-    )
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

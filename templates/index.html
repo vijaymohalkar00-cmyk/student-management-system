@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Management System</title>
+    <title>Student Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -10,57 +10,72 @@
 
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>🎓 Student Management System</h2>
+        <h2>🎓 Dashboard</h2>
         <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card text-white bg-primary p-3">
+                <h5>Total Students</h5>
+                <h2>{{ total }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card p-3">
+                <h5>Department-wise Students</h5>
+                <ul>
+                    {% for dept in dept_data %}
+                    <li>{{ dept[0] }} : {{ dept[1] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
     </div>
 
     <!-- SEARCH -->
     <form action="/search" method="POST" class="mb-3">
-        <input type="text" name="keyword" class="form-control" placeholder="🔍 Search by name">
+        <input type="text" name="keyword" class="form-control" placeholder="Search by name">
     </form>
 
-    <!-- ADD STUDENT -->
-    <div class="card p-3 mb-4 shadow-sm">
+    <!-- ADD -->
+    <div class="card p-3 mb-4">
         <h4>Add Student</h4>
         <form action="/add" method="POST">
-            <input class="form-control mb-2" type="text" name="name" placeholder="Enter Name" required>
-            <input class="form-control mb-2" type="number" name="age" placeholder="Enter Age" required>
-            <input class="form-control mb-2" type="text" name="department" placeholder="Enter Department" required>
-            <button class="btn btn-primary w-100">Add Student</button>
+            <input class="form-control mb-2" type="text" name="name" required>
+            <input class="form-control mb-2" type="number" name="age" required>
+            <input class="form-control mb-2" type="text" name="department" required>
+            <button class="btn btn-success">Add</button>
         </form>
     </div>
 
-    <!-- STUDENT TABLE -->
-    <div class="card p-3 shadow-sm">
-        <h4>Students List</h4>
+    <!-- TABLE -->
+    <div class="card p-3">
+        <table class="table table-bordered">
+            <tr class="table-dark">
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Department</th>
+                <th>Action</th>
+            </tr>
 
-        <table class="table table-bordered table-hover mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Department</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for student in students %}
-                <tr>
-                    <td>{{ student[0] }}</td>
-                    <td>{{ student[1] }}</td>
-                    <td>{{ student[2] }}</td>
-                    <td>{{ student[3] }}</td>
-                    <td>
-                        <a href="/edit/{{ student[0] }}" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="/delete/{{ student[0] }}" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Are you sure?')">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
+            {% for s in students %}
+            <tr>
+                <td>{{ s[0] }}</td>
+                <td>{{ s[1] }}</td>
+                <td>{{ s[2] }}</td>
+                <td>{{ s[3] }}</td>
+                <td>
+                    <a href="/edit/{{ s[0] }}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/delete/{{ s[0] }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
         </table>
     </div>
 
