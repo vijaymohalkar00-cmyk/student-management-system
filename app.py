@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
+import os
 
 app = Flask(__name__)
 
@@ -23,7 +24,7 @@ def create_table():
 
 create_table()
 
-# ---------- HOME ----------
+# ---------- HOME (READ) ----------
 @app.route('/')
 def index():
     conn = connect()
@@ -33,7 +34,7 @@ def index():
     conn.close()
     return render_template("index.html", students=students)
 
-# ---------- ADD ----------
+# ---------- ADD (CREATE) ----------
 @app.route('/add', methods=['POST'])
 def add():
     name = request.form['name']
@@ -59,37 +60,12 @@ def delete(id):
     cursor.execute("DELETE FROM students WHERE id=?", (id,))
     conn.commit()
     conn.close()
+
     return redirect('/')
 
-# ---------- EDIT ----------
-@app.route('/edit/<int:id>')
-def edit(id):
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM students WHERE id=?", (id,))
-    student = cursor.fetchone()
-    conn.close()
-    return render_template("edit.html", student=student)
-
-# ---------- UPDATE ----------
-@app.route('/update/<int:id>', methods=['POST'])
-def update(id):
-    name = request.form['name']
-    age = request.form['age']
-    dept = request.form['department']
-
-    conn = connect()
-    cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE students
-        SET name=?, age=?, department=?
-        WHERE id=?
-    """, (name, age, dept, id))
-
-    conn.commit()
-    conn.close()
-    return redirect('/')
-
-# ---------- RUN ----------
+# ---------- RUN (IMPORTANT FOR RENDER) ----------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=int(os.environ.get('PORT', 5000))
+    )
